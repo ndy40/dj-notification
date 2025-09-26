@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  web:
+    build: .
+    container_name: dj_notificattion_web
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    environment:
+      # Django will read these to connect to Postgres
+      - POSTGRES_DB=dj_notificattion
+      - POSTGRES_USER=dj_user
+      - POSTGRES_PASSWORD=dj_pass
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      # Optional: allow all hosts in containerized dev
+      - DJANGO_ALLOWED_HOSTS=*
+    volumes:
+      - .:/app
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:17
+    container_name: dj_notificattion_db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=dj_notificattion
+      - POSTGRES_USER=dj_user
+      - POSTGRES_PASSWORD=dj_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:
