@@ -4,7 +4,7 @@ from django.utils.safestring import mark_safe
 from common.markdown import render_markdown_safe
 
 from .mixins import AdminReadOnlyMixin
-from .models import Provider, Service, Template
+from .models import Notification, Provider, Service, Template
 
 
 @admin.register(Provider)
@@ -48,7 +48,7 @@ class ProviderAdmin(AdminReadOnlyMixin, admin.ModelAdmin):
 
 @admin.register(Template)
 class TemplateAdmin(admin.ModelAdmin):
-    list_display = ("id", "title", "subject", "service", "version", "created_at", "updated_at")
+    list_display = ("title", "subject", "service", "created_at", "updated_at")
     list_filter = ("enabled",)
     search_fields = ("title", "subject", "service__name")
     readonly_fields = ("variables", "created_at", "updated_at")
@@ -89,4 +89,28 @@ class ServiceAdmin(admin.ModelAdmin):
         ("Provider/Auth", {"fields": ("provider", "api_key", "api_expires_on")}),
         ("Configuration", {"fields": ("config",)}),
         ("Timestamps", {"fields": ("created_at", "updated_at")}),
+    )
+
+
+@admin.register(Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "service",
+        "type",
+        "status",
+        "http_status",
+        "retry_count",
+        "created_at",
+        "update_at",
+    )
+    list_filter = ("status", "type", "service__provider__type")
+    search_fields = ("id", "request_id", "service__name", "service__provider__name")
+    readonly_fields = ("created_at", "update_at")
+    fieldsets = (
+        (None, {"fields": ("service", "template_ref", "request_id")}),
+        ("Content", {"fields": ("content", "plain_text")}),
+        ("Delivery", {"fields": ("type", "status", "retry_count", "http_status")}),
+        ("Payload/Response", {"fields": ("payload_config", "provider_response")}),
+        ("Timestamps", {"fields": ("created_at", "update_at")}),
     )

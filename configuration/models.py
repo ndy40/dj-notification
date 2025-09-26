@@ -157,3 +157,55 @@ def _generate_api_key(total_length: int = 32, prefix: str = "svc_") -> str:
     remaining = total_length - len(prefix)
     suffix = "".join(secrets.choice(alphabet) for _ in range(remaining))
     return f"{prefix}{suffix}"
+
+
+class Notification(models.Model):
+    """Represents a notification event/enqueue record.
+
+    Notes:
+    - A notification is attached to exactly one Service via FK.
+    - A notification can reference at most one Template via FK.
+    - The `type` is derived from the Service's Provider type and set on save.
+    """
+
+    class ContentType(models.TextChoices):
+        HTML = "html", "HTML"
+        TEXT = "text", "Text"
+
+    class Status(models.TextChoices):
+        PENDING = "pending", "PENDING"
+        SENT = "sent", "SENT"
+        ERROR = "error", "Error"
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    service = models.ForeignKey("Service", on_delete=models.CASCADE, related_name="notifications")
+    request_id = models.CharField(max_length=255, blank=True)
+    template_ref = models.ForeignKey(
+        "Template", null=True, blank=True, on_delete=models.SET_NULL, related_name="notifications"
+    )
+    # Derived from service.provider.type
+    type = models.CharField(max_length=20, choices=Provider.ProviderType.choices, editable=False)
+    payload_config = models.JSONField(default=dict, blank=True, help_text="Destination config like email/phone")
+    content = models.CharField(max_length=10, choices=ContentType.choices, default=ContentType.TEXT)
+    plain_text = models.TextField(blank=True)
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
+    provider_response = models.JSONField(default=dict, blank=True)
+    http_status = models.CharField(max_length=50, blank=True)
+    retry_count = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    update_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "notifications"
+        ordering = ["-created_at"]
+        verbose_name = "Notification"
+        verbose_name_plural = "Notifications"
+
+    def __str__(self) -> str:  # pragma: no cover - trivial
+        return f"Notification {self.id} ({self.get_status_display()})"
+
+    def save(self, *args, **kwargs):
+        # Derive type from service.provider.type if service is set
+        if getattr(self, "service", None) and getattr(self.service, "provider", None):
+            self.type = self.service.provider.type
+        super().save(*args, **kwargs)
