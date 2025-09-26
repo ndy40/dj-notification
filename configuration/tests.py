@@ -19,7 +19,7 @@ class TemplateModelTests(TestCase):
 
 class ServiceModelTests(TestCase):
     def setUp(self):
-        self.provider = Provider.objects.create(name="Mailgun", code="mailgun", type="email")
+        self.provider, _ = Provider.objects.get_or_create(code="mailgun", defaults={"name": "Mailgun", "type": "email"})
 
     def test_create_service_with_templates_one_to_many(self):
         svc = Service.objects.create(
@@ -61,7 +61,7 @@ class ServiceModelTests(TestCase):
 
 class ServiceConfigValidationTests(TestCase):
     def setUp(self):
-        self.provider = Provider.objects.create(name="Mailgun", code="mailgun", type="email")
+        self.provider, _ = Provider.objects.get_or_create(code="mailgun", defaults={"name": "Mailgun", "type": "email"})
 
     def test_invalid_config_raises_validation_error(self):
         # Missing required 'api_key' should fail validation against MailgunEmail schema

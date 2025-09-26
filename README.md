@@ -76,6 +76,29 @@ If you prefer a local environment:
 
   bash bin/create_user.sh
 
+## Running tests with a different database/schema
+
+You can run Django tests against a different database (and, for PostgreSQL, a specific schema) without changing your development DB. The settings module reads two environment variables when the test runner is invoked:
+
+- DJANGO_TEST_DB_NAME — Overrides the test database name.
+- DJANGO_TEST_DB_SCHEMA — For PostgreSQL only, sets the search_path so tests run in that schema (objects are created there). If not present, Django will use the default search_path.
+
+Examples:
+
+- SQLite in-memory (fast):
+
+  DJANGO_TEST_DB_NAME=":memory:" python manage.py test
+
+- PostgreSQL with custom DB and schema:
+
+  POSTGRES_DB=appdb POSTGRES_USER=app POSTGRES_PASSWORD=secret POSTGRES_HOST=localhost \
+  DJANGO_TEST_DB_NAME=test_appdb DJANGO_TEST_DB_SCHEMA=test_schema \
+  python manage.py test --keepdb --parallel
+
+Notes:
+- These overrides only apply when running tests (python manage.py test). They do not affect development or production runs.
+- For PostgreSQL, the schema is injected via connection options (search_path=<schema>,public).
+
 ## Troubleshooting
 
 - If `docker compose` is not found, install or update Docker to a version that includes Compose v2 (see link above). On some systems the command may be `docker-compose`; the script supports both.
