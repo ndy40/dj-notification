@@ -4,7 +4,7 @@ from django.utils.safestring import mark_safe
 from common.markdown import render_markdown_safe
 
 from .mixins import AdminReadOnlyMixin
-from .models import Provider
+from .models import Provider, Service, Template
 
 
 @admin.register(Provider)
@@ -44,3 +44,45 @@ class ProviderAdmin(AdminReadOnlyMixin, admin.ModelAdmin):
         return mark_safe(html)
 
     request_schema_documentation.short_description = "Request Schema Documentation"
+
+
+@admin.register(Template)
+class TemplateAdmin(admin.ModelAdmin):
+    list_display = ("id", "title", "subject", "service", "version", "created_at", "updated_at")
+    list_filter = ("enabled",)
+    search_fields = ("title", "subject", "service__name")
+    readonly_fields = ("variables", "created_at", "updated_at")
+    fieldsets = (
+        (None, {"fields": ("title", "subject", "service", "version", "enabled")}),
+        ("Content", {"fields": ("template",)}),
+        ("Computed/Metadata", {"fields": ("variables", "created_at", "updated_at")}),
+    )
+
+
+class TemplateInline(admin.TabularInline):
+    model = Template
+    extra = 1
+    fields = ("title", "subject", "version", "enabled")
+
+
+@admin.register(Service)
+class ServiceAdmin(admin.ModelAdmin):
+    list_display = ("name", "provider", "enabled", "api_expires_on", "created_at")
+    list_filter = ("enabled", "provider__type")
+    search_fields = ("name", "provider__name", "provider__code")
+    readonly_fields = ("created_at", "updated_at")
+    inlines = [TemplateInline]
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": (
+                    "name",
+                    "enabled",
+                )
+            },
+        ),
+        ("Provider/Auth", {"fields": ("provider", "api_key", "api_expires_on")}),
+        ("Configuration", {"fields": ("config",)}),
+        ("Timestamps", {"fields": ("created_at", "updated_at")}),
+    )
