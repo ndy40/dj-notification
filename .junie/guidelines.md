@@ -42,20 +42,20 @@ Overview
   - For simple DB checks, you can use connections/cursors inside TestCase; migrations are applied to the test DB automatically.
 - Adding a new test (verified example)
   - Create a file core/test_demo.py with:
-    
+
     from django.test import TestCase
     from django.db import connection
-    
+
     class DemoTestCase(TestCase):
         def test_basic_truth(self):
             self.assertTrue(True)
-        
+
         def test_database_available(self):
             with connection.cursor() as cursor:
                 cursor.execute("SELECT 1")
                 row = cursor.fetchone()
             assert row[0] == 1
-    
+
   - Run: python manage.py test
   - Expected: 2 tests discovered and passing. This procedure was executed and confirmed during preparation of this document. The example file was subsequently removed to keep the repo clean.
 - App-level testing
@@ -81,6 +81,7 @@ Overview
 - Running locally
   - Server: python manage.py runserver (hot reloading enabled by Django).
   - Creates/uses db.sqlite3. Avoid committing large local DB changes; tests do not depend on dev DB.
+- To run django migration commands, reference the scripts in bin/migrate.sh and bin/makemigrations.sh
 
 4) Notes for CI/CD (if added later)
 - Use Python 3.13 runners.
