@@ -44,6 +44,14 @@ From the project root:
    - Admin: http://localhost:8000/admin/
    - Log in with the credentials above (admin / dj-notification-pass)
 
+## API Docs (DRF + drf-spectacular)
+
+Once the server is running, the OpenAPI schema and interactive docs are available at:
+
+- Schema (YAML): http://localhost:8000/api/schema/
+- Swagger UI: http://localhost:8000/api/docs/
+- Redoc: http://localhost:8000/api/redoc/
+
 ## Notes
 
 - The helper script bin/create_user.sh works in three contexts:
