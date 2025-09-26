@@ -6,6 +6,11 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     POETRY_VERSION=1.8.3
 
+# Build-time args to create a non-root user matching host UID/GID
+ARG APP_USER=app
+ARG APP_UID=1000
+ARG APP_GID=1000
+
 WORKDIR /app
 
 # Install system dependencies (curl for health/debug, build deps kept minimal)
@@ -25,6 +30,14 @@ RUN poetry config virtualenvs.create false \
 
 # Copy project source
 COPY . .
+
+# Create a non-root user and group, and set ownership of the workdir
+RUN groupadd -g ${APP_GID} ${APP_USER} \
+    && useradd -m -u ${APP_UID} -g ${APP_GID} -s /bin/bash ${APP_USER} \
+    && chown -R ${APP_UID}:${APP_GID} /app
+
+# Switch to non-root user for runtime
+USER ${APP_UID}:${APP_GID}
 
 EXPOSE 8000
 
