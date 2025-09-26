@@ -61,8 +61,12 @@ class TemplateAdmin(admin.ModelAdmin):
 
 class TemplateInline(admin.TabularInline):
     model = Template
-    extra = 1
     fields = ("title", "subject", "version", "enabled")
+    readonly_fields = ("title", "subject", "version", "enabled")
+    can_delete = False
+    extra = 0
+    max_num = 0
+    show_change_link = True
 
 
 @admin.register(Service)
