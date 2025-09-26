@@ -12,6 +12,31 @@ psycopg = {version = ">=3.2,<4.0", extras = ["binary"]}
 djangorestframework = ">=3.15,<4.0"
 drf-spectacular = ">=0.27,<1.0"
 
+[tool.poetry.group.dev.dependencies]
+pre-commit = ">=3.8,<4.0"
+ruff = ">=0.6.0,<1.0"
+django-upgrade = ">=1.22,<2.0"
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+# Enable core rules, isort (I), pyupgrade (UP), and Django (DJ)
+select = [
+  "E","F","I","UP","DJ"
+]
+ignore = []
+
+[tool.ruff.format]
+# Use Ruff as the formatter; keep default settings
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+
+[tool.ruff.lint.isort]
+known-first-party = ["dj_notificattion", "core", "configuration"]
+
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"

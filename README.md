@@ -16,7 +16,7 @@ From the project root:
 1) Start the services
 
    - Bring up the app and database in the background:
-     
+
      docker compose up -d
 
    - The web service will run Django’s development server on http://localhost:8000
@@ -24,7 +24,7 @@ From the project root:
 2) Create the Django superuser (admin)
 
    - Run the helper script from the host (recommended):
-     
+
      bash bin/create_user.sh
 
    - The script will:
@@ -35,7 +35,7 @@ From the project root:
        - password: dj-notification-pass
 
    - Alternatively, you can run the script from inside the running container:
-     
+
      docker compose exec web bash -lc "bash bin/create_user.sh"
 
 3) Access the site and admin
@@ -66,14 +66,14 @@ If you prefer a local environment:
 
 - Python 3.13 and Poetry are required
 - Install dependencies:
-  
+
   poetry install
 - Apply migrations and run the dev server:
-  
+
   python manage.py migrate
   python manage.py runserver
 - Create the superuser locally using the same script:
-  
+
   bash bin/create_user.sh
 
 ## Troubleshooting
@@ -81,3 +81,17 @@ If you prefer a local environment:
 - If `docker compose` is not found, install or update Docker to a version that includes Compose v2 (see link above). On some systems the command may be `docker-compose`; the script supports both.
 - On Windows, run commands in a Unix-like shell (e.g., Git Bash or WSL) for best compatibility with the script.
 - If ports are in use, stop conflicting services or adjust port mappings in docker-compose.yml.
+
+## Development tooling
+
+This repo uses pre-commit with Ruff for linting/formatting and Django best-practice checks.
+
+Install once (requires Poetry):
+
+- poetry install
+- poetry run pre-commit install
+- To also run on push: poetry run pre-commit install -t pre-push
+
+Run the hooks on all files manually:
+
+- poetry run pre-commit run --all-files
