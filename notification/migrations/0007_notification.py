@@ -8,7 +8,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("configuration", "0006_alter_template_add_service_and_remove_service_templates"),
+        ("notification", "0006_alter_template_add_service_and_remove_service_templates"),
     ]
 
     operations = [

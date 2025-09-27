@@ -6,7 +6,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("configuration", "0005_service"),
+        ("notification", "0005_service"),
     ]
 
     operations = [
@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
             model_name="template",
             name="service",
             field=models.ForeignKey(
-                to="configuration.service",
+                to="notification.service",
                 on_delete=django.db.models.deletion.CASCADE,
                 related_name="templates",
                 null=True,

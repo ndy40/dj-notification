@@ -4,7 +4,7 @@ from django.db import migrations
 
 
 def create_mailgun_provider(apps, schema_editor):
-    Provider = apps.get_model("configuration", "Provider")
+    Provider = apps.get_model("notification", "Provider")
     # Ensure id is auto-generated (UUIDField default)
     Provider.objects.get_or_create(
         code="mailgun",
@@ -13,13 +13,13 @@ def create_mailgun_provider(apps, schema_editor):
 
 
 def remove_mailgun_provider(apps, schema_editor):
-    Provider = apps.get_model("configuration", "Provider")
+    Provider = apps.get_model("notification", "Provider")
     Provider.objects.filter(code="mailgun").delete()
 
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("configuration", "0002_remove_provider_config_schema_and_more"),
+        ("notification", "0002_remove_provider_config_schema_and_more"),
     ]
 
     operations = [

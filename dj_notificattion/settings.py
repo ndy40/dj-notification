@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "drf_spectacular",
     # Local apps
-    "configuration",
+    "notification",
 ]
 
 MIDDLEWARE = [

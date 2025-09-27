@@ -5,7 +5,7 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("configuration", "0001_initial"),
+        ("notification", "0001_initial"),
     ]
 
     operations = [
